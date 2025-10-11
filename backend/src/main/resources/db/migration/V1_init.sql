@@ -1,3 +1,11 @@
+CREATE DATABASE IF NOT EXISTS streamify_db;
+CREATE USER IF NOT EXISTS 'streamify_user'@'%' IDENTIFIED BY 'streamify_pass';
+GRANT ALL PRIVILEGES ON streamify_db.* TO 'streamify_user'@'%';
+
+FLUSH PRIVILEGES;
+
+USE streamify_db;
+
 CREATE TABLE users
 (
     email VARCHAR(20) PRIMARY KEY,
