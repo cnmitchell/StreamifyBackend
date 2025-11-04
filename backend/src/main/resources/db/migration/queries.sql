@@ -11,7 +11,7 @@ c.genre LIKE CONCAT('%','%')
 AND
 p1.name LIKE CONCAT('%','%') # actor
 AND
-p2.name LIKE CONCAT('%','%') # director
+p2.name LIKE CONCAT('%','%') # director.
 AND
 c.content_name LIKE CONCAT('%','%');
 
