@@ -13,7 +13,6 @@ services:
       MYSQL_PASSWORD: streamify_pass
     volumes:
       - db_data:/var/lib/mysql
-      - ./mysql/my.cnf:/etc/mysql/conf.d/my.cnf
       - ./backend/src/main/resources/db/migration:/docker-entrypoint-initdb.d
     restart: unless-stopped
 
