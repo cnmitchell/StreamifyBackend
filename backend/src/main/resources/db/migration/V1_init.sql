@@ -21,6 +21,7 @@ CREATE TABLE users
 CREATE TABLE content
 (
     content_id CHAR(20) PRIMARY KEY,
+    content_name VARCHAR(20),
     release_date VARCHAR(20),
     IMDB_link VARCHAR(20),
     genre VARCHAR(20)
@@ -29,7 +30,7 @@ CREATE TABLE content
 CREATE TABLE subscriptionPlan
 (
     subscription_id CHAR(20) PRIMARY KEY,
-    name VARCHAR(20),
+    sub_name VARCHAR(20),
     active_streams INT,
     price INT
 );
