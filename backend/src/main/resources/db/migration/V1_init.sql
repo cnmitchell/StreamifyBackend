@@ -34,7 +34,8 @@ CREATE TABLE content
     content_name VARCHAR(100),
     release_date DATE,
     IMDB_link VARCHAR(255),
-    genre VARCHAR(50)
+    genre VARCHAR(50),
+    poster_url VARCHAR(300)
 );
 
 CREATE TABLE subscriptionPlan
