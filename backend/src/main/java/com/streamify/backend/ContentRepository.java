@@ -127,10 +127,10 @@ public class ContentRepository {
     //get members who streamed a specific type of content
     public List<Map<String, Object>> membersWhoStreamed(String content_id) {
         String sql = "SELECT m.member_id, u.name " +
-                "FROM stream s " +
-                "JOIN `member` m ON s.email = m.email " +
+                "FROM streamingHistory sh " +
+                "JOIN member m ON sh.email = m.email " +
                 "JOIN users u ON m.email = u.email " +
-                "WHERE s.content_id = ?";
+                "WHERE sh.content_id = ?";
 
         return jdbcTemplate.queryForList(sql, content_id);
     }
