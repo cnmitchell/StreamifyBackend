@@ -1,6 +1,8 @@
 package com.streamify.backend;
 
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,6 +38,13 @@ public class ContentService {
         return contentRepository.sequels(content_id);
     }
 
+    public Map<String, Object> getMovieDetails(String content_id) {
+        Map<String, Object> movieDetails = new HashMap<>();
+        movieDetails.put("details", contentRepository.getMovieDetails(content_id));
+        movieDetails.put("sequels", contentRepository.getMovieSequels(content_id));
+        return movieDetails;
+    }
+
     public List<Map<String, Object>> membersWhoStreamed(String content_id) {
         return contentRepository.membersWhoStreamed(content_id);
     }
@@ -46,5 +55,9 @@ public class ContentService {
 
     public List<Map<String, Object>> topTenStreamed() {
         return contentRepository.topTenStreamed();
+    }
+
+    public List<Map<String, Object>> getAllMembers() {
+        return contentRepository.getAllMembers();
     }
 }

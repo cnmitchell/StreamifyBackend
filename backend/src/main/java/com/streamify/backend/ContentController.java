@@ -26,7 +26,7 @@ public class ContentController {
         return contentService.browseMovies(genre, actor, director, keyword);
     }
 
-    @GetMapping("/browse/series")
+    @GetMapping("/browse/series") //need to add series to db
     public List<Map<String, Object>> browseSeries(
             @RequestParam(required = false) String genre,
             @RequestParam(required = false) String actor,
@@ -40,7 +40,7 @@ public class ContentController {
         return contentService.awardWinningMovies();
     }
 
-    @GetMapping("/browse/series/not-streamed")
+    @GetMapping("/browse/series/not-streamed") //need to add series to db
     public List<Map<String, Object>> notStreamedSeries(@RequestParam String email) {
         return contentService.notStreamedSeries(email);
     }
@@ -50,17 +50,22 @@ public class ContentController {
         return contentService.streamingHistory(email);
     }
 
-    @GetMapping("/sequels")
+    @GetMapping("/sequels") //it lists the next movie but not the ones after the sequel, is that needed?
     public List<Map<String, Object>> sequels(@RequestParam String content_id) {
         return contentService.sequels(content_id);
     }
 
-    @GetMapping("/members-who-streamed")
+    @GetMapping("/movie-details")
+    public Map<String, Object> getMovieDetails(@RequestParam String content_id) {
+        return contentService.getMovieDetails(content_id);
+    }
+
+    @GetMapping("/members-who-streamed") //getting empty array back??
     public List<Map<String, Object>> membersWhoStreamed(@RequestParam String content_id) {
         return contentService.membersWhoStreamed(content_id);
     }
 
-    @GetMapping("/last-24h-trends")
+    @GetMapping("/last-24h-trends") //need to test again
     public List<Map<String, Object>> last24hTrends() {
         return contentService.last24hTrends();
     }
@@ -68,5 +73,10 @@ public class ContentController {
     @GetMapping("/top-ten-streamed")
     public List<Map<String, Object>> topTenStreamed() {
         return contentService.topTenStreamed();
+    }
+
+    @GetMapping("/members")
+    public List<Map<String, Object>> getAllMembers() {
+        return contentService.getAllMembers();
     }
 }

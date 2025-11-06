@@ -16,8 +16,7 @@ public class ContentRepository {
     // ---------------USER QUERIES---------------
     // Browse movies by keyword, actor, director, genre
     public List<Map<String, Object>> browseMovies(String genre, String actor, String director, String keyword) {
-        String sql = "SELECT DISTINCT " +
-                "c.content_id, c.content_name, c.release_date, c.IMDB_link, c.genre " +
+        String sql = "SELECT DISTINCT c.content_id, c. content_name, c.poster_url " +
                 "FROM content c " +
                 "JOIN movie m ON c.content_id = m.content_id " +
                 "LEFT JOIN castIn ci ON c.content_id = ci.content_id " +
@@ -38,7 +37,7 @@ public class ContentRepository {
 
     // Browse series by keyword, actor, director, genre
     public List<Map<String, Object>> browseSeries(String genre, String actor, String director, String keyword) {
-        String sql = "SELECT DISTINCT c.content_id, c.content_name, c.release_date, s.total_seasons, s.total_episodes, " +
+        String sql = "SELECT DISTINCT c.content_id, c.content_name, c.release_date, s.total_seasons, s.total_episodes, c.poster_url" +
                 "e.title AS episode_title, e.season_number, e.episode_number, e.release_date AS episode_release_date, c.IMDB_link, c.genre " +
                 "FROM content c " +
                 "JOIN series s ON c.content_id = s.content_id " +
@@ -107,12 +106,39 @@ public class ContentRepository {
         return jdbcTemplate.queryForList(sql, content_id);
     }
 
+    public List<Map<String, Object>> getMovieDetails(String content_id) {
+        String sql = "SELECT c.poster_url, c.IMDB_link, c.content_name, c.release_date, c.genre, " +
+                "(SELECT GROUP_CONCAT(p.name SEPARATOR ', ') FROM person p JOIN directedBy db ON p.person_id = db.person_id WHERE db.content_id = c.content_id) AS director, " +
+                "(SELECT GROUP_CONCAT(p.name SEPARATOR ', ') FROM person p JOIN castIn ci ON p.person_id = ci.person_id WHERE ci.content_id = c.content_id) AS cast, " +
+                "(SELECT GROUP_CONCAT(a.award_name SEPARATOR ', ') FROM award a JOIN awardedTo at ON a.award_name = at.award_name WHERE at.content_id = c.content_id) AS awards " +
+                "FROM content c " +
+                "WHERE c.content_id = ?";
+        return jdbcTemplate.queryForList(sql, content_id);
+    }
+
+    public List<Map<String, Object>> getMovieSequels(String content_id) {
+        String sql = "WITH RECURSIVE sequels_cte AS ( " +
+                "  SELECT content_id, sequel_to, 1 AS level " +
+                "  FROM movie " +
+                "  WHERE content_id = ? " +
+                "  UNION ALL " +
+                "  SELECT m.content_id, m.sequel_to, s.level + 1 " +
+                "  FROM movie m " +
+                "  JOIN sequels_cte s ON m.sequel_to = s.content_id " +
+                ") " +
+                "SELECT c.content_id, c.poster_url " +
+                "FROM sequels_cte s " +
+                "JOIN content c ON s.content_id = c.content_id " +
+                "WHERE s.level > 1";
+        return jdbcTemplate.queryForList(sql, content_id);
+    }
+
     //--------------ADMIN QUERIES------------------
     //get members who streamed a specific type of content
     public List<Map<String, Object>> membersWhoStreamed(String content_id) {
         String sql = "SELECT m.member_id, u.name " +
                 "FROM stream s " +
-                "JOIN member m ON s.email = m.email " +
+                "JOIN `member` m ON s.email = m.email " +
                 "JOIN users u ON m.email = u.email " +
                 "WHERE s.content_id = ?";
 
@@ -143,4 +169,12 @@ public class ContentRepository {
         return jdbcTemplate.queryForList(sql);
     }
 
+    //get all members
+    public List<Map<String, Object>> getAllMembers() {
+        String sql = "SELECT m.member_id, u.name, u.email, s.name AS subscription_name " +
+                "FROM member m " +
+                "JOIN users u ON m.email = u.email " +
+                "LEFT JOIN subscriptionPlan s ON m.subscription_id = s.subscription_id";
+        return jdbcTemplate.queryForList(sql);
+    }
 }
