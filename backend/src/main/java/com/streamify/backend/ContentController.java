@@ -50,11 +50,6 @@ public class ContentController {
         return contentService.streamingHistory(email);
     }
 
-    @GetMapping("/sequels") //it lists the next movie but not the ones after the sequel, is that needed?
-    public List<Map<String, Object>> sequels(@RequestParam String content_id) {
-        return contentService.sequels(content_id);
-    }
-
     @GetMapping("/movie-details")
     public Map<String, Object> getMovieDetails(@RequestParam String content_id) {
         return contentService.getMovieDetails(content_id);

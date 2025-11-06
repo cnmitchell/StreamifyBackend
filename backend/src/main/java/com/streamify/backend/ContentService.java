@@ -34,10 +34,6 @@ public class ContentService {
         return contentRepository.streamingHistory(email);
     }
 
-    public List<Map<String, Object>> sequels(String content_id) {
-        return contentRepository.sequels(content_id);
-    }
-
     public Map<String, Object> getMovieDetails(String content_id) {
         Map<String, Object> movieDetails = new HashMap<>();
         movieDetails.put("details", contentRepository.getMovieDetails(content_id));

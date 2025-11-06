@@ -96,16 +96,6 @@ public class ContentRepository {
         return jdbcTemplate.queryForList(sql, email);
     }
 
-    //get all sequels to a movie
-    public List<Map<String, Object>> sequels(String content_id) {
-        String sql = "SELECT c.content_name, m.content_id, m.sequel_to " +
-                "FROM movie m " +
-                "JOIN content c ON m.content_id = c.content_id " +
-                "WHERE m.sequel_to = ?";
-
-        return jdbcTemplate.queryForList(sql, content_id);
-    }
-
     public List<Map<String, Object>> getMovieDetails(String content_id) {
         String sql = "SELECT c.poster_url, c.IMDB_link, c.content_name, c.release_date, c.genre, " +
                 "(SELECT GROUP_CONCAT(p.name SEPARATOR ', ') FROM person p JOIN directedBy db ON p.person_id = db.person_id WHERE db.content_id = c.content_id) AS director, " +
