@@ -14,6 +14,10 @@ public class ContentService {
         this.contentRepository = contentRepository;
     }
 
+    public boolean login(String email, String password) {
+        return contentRepository.login(email, password);
+    }
+
     public List<Map<String, Object>> browseMovies(String genre, String actor, String director, String keyword, Boolean awardWinning) {
         return contentRepository.browseMovies(genre, actor, director, keyword, awardWinning);
     }

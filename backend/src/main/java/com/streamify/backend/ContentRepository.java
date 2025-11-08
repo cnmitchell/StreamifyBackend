@@ -14,6 +14,12 @@ public class ContentRepository {
     }
 
     // ---------------USER QUERIES---------------
+    public boolean login(String email, String password) {
+        String sql = "SELECT COUNT(*) FROM users WHERE email = ? AND password = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, new Object[]{email, password}, Integer.class);
+        return count != null && count > 0;
+    }
+
     // Browse movies by keyword, actor, director, genre
     public List<Map<String, Object>> browseMovies(String genre, String actor, String director, String keyword, Boolean awardWinning) {
         StringBuilder sql = new StringBuilder("SELECT DISTINCT c.content_id, c.content_name, c.poster_url " +
