@@ -14,16 +14,12 @@ public class ContentService {
         this.contentRepository = contentRepository;
     }
 
-    public List<Map<String, Object>> browseMovies(String genre, String actor, String director, String keyword) {
-        return contentRepository.browseMovies(genre, actor, director, keyword);
+    public List<Map<String, Object>> browseMovies(String genre, String actor, String director, String keyword, Boolean awardWinning) {
+        return contentRepository.browseMovies(genre, actor, director, keyword, awardWinning);
     }
 
-    public List<Map<String, Object>> browseSeries(String genre, String actor, String director, String keyword) {
-        return contentRepository.browseSeries(genre, actor, director, keyword);
-    }
-
-    public List<Map<String, Object>> awardWinningMovies() {
-        return contentRepository.awardWinningMovies();
+    public List<Map<String, Object>> browseSeries(String genre, String actor, String director, String keyword, Boolean awardWinning) {
+        return contentRepository.browseSeries(genre, actor, director, keyword, awardWinning);
     }
 
     public List<Map<String, Object>> notStreamedSeries(String email) {

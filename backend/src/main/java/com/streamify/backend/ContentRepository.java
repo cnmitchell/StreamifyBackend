@@ -15,29 +15,34 @@ public class ContentRepository {
 
     // ---------------USER QUERIES---------------
     // Browse movies by keyword, actor, director, genre
-    public List<Map<String, Object>> browseMovies(String genre, String actor, String director, String keyword) {
-        String sql = "SELECT DISTINCT c.content_id, c. content_name, c.poster_url " +
+    public List<Map<String, Object>> browseMovies(String genre, String actor, String director, String keyword, Boolean awardWinning) {
+        StringBuilder sql = new StringBuilder("SELECT DISTINCT c.content_id, c.content_name, c.poster_url " +
                 "FROM content c " +
                 "JOIN movie m ON c.content_id = m.content_id " +
                 "LEFT JOIN castIn ci ON c.content_id = ci.content_id " +
                 "LEFT JOIN directedBy db ON c.content_id = db.content_id " +
                 "LEFT JOIN person actor ON ci.person_id = actor.person_id " +
-                "LEFT JOIN person director ON db.person_id = director.person_id " +
-                "WHERE c.genre LIKE CONCAT('%', ?, '%') " +
+                "LEFT JOIN person director ON db.person_id = director.person_id ");
+
+        if (Boolean.TRUE.equals(awardWinning)) {
+            sql.append("JOIN awardedTo at ON c.content_id = at.content_id ");
+        }
+
+        sql.append("WHERE c.genre LIKE CONCAT('%', ?, '%') " +
                 "AND actor.name LIKE CONCAT('%', ?, '%') " +
                 "AND director.name LIKE CONCAT('%', ?, '%') " +
-                "AND c.content_name LIKE CONCAT('%', ?, '%')";
+                "AND c.content_name LIKE CONCAT('%', ?, '%')");
 
-        return jdbcTemplate.queryForList(sql,
-                genre != null? genre : "",
-                actor != null? actor : "",
-                director != null? director : "",
-                keyword != null? keyword : "");
+        return jdbcTemplate.queryForList(sql.toString(),
+                genre != null ? genre : "",
+                actor != null ? actor : "",
+                director != null ? director : "",
+                keyword != null ? keyword : "");
     }
 
     // Browse series by keyword, actor, director, genre
-    public List<Map<String, Object>> browseSeries(String genre, String actor, String director, String keyword) {
-        String sql = "SELECT DISTINCT c.content_id, c.content_name, c.release_date, s.total_seasons, s.total_episodes, c.poster_url" +
+    public List<Map<String, Object>> browseSeries(String genre, String actor, String director, String keyword, Boolean awardWinning) {
+        StringBuilder sql = new StringBuilder("SELECT DISTINCT c.content_id, c.content_name, c.release_date, s.total_seasons, s.total_episodes, c.poster_url, " +
                 "e.title AS episode_title, e.season_number, e.episode_number, e.release_date AS episode_release_date, c.IMDB_link, c.genre " +
                 "FROM content c " +
                 "JOIN series s ON c.content_id = s.content_id " +
@@ -45,28 +50,22 @@ public class ContentRepository {
                 "LEFT JOIN castIn ci ON c.content_id = ci.content_id " +
                 "LEFT JOIN directedBy db ON c.content_id = db.content_id " +
                 "LEFT JOIN person actor ON ci.person_id = actor.person_id " +
-                "LEFT JOIN person director ON db.person_id = director.person_id " +
-                "WHERE c.genre LIKE CONCAT('%', ?, '%') " +
+                "LEFT JOIN person director ON db.person_id = director.person_id ");
+
+        if (Boolean.TRUE.equals(awardWinning)) {
+            sql.append("JOIN awardedTo at ON c.content_id = at.content_id ");
+        }
+
+        sql.append("WHERE c.genre LIKE CONCAT('%', ?, '%') " +
                 "  AND actor.name LIKE CONCAT('%', ?, '%') " +
                 "  AND director.name LIKE CONCAT('%', ?, '%') " +
-                "  AND c.content_name LIKE CONCAT('%', ?, '%')";
+                "  AND c.content_name LIKE CONCAT('%', ?, '%')");
 
-        return jdbcTemplate.queryForList(sql,
-                genre != null? genre : "",
-                actor != null? actor : "",
-                director != null? director : "",
-                keyword != null? keyword : "");
-    }
-
-    //browse award-winning movies
-    public List<Map<String, Object>> awardWinningMovies() {
-        String sql = "SELECT DISTINCT c.content_id, c.content_name, c.release_date, c.IMDB_link, c.genre, a.award_name " +
-                "FROM content c " +
-                "JOIN movie m ON c.content_id = m.content_id " +
-                "JOIN awardedTo at ON c.content_id = at.content_id " +
-                "JOIN award a ON at.award_name = a.award_name";
-
-        return jdbcTemplate.queryForList(sql);
+        return jdbcTemplate.queryForList(sql.toString(),
+                genre != null ? genre : "",
+                actor != null ? actor : "",
+                director != null ? director : "",
+                keyword != null ? keyword : "");
     }
 
     //browse series never streamed before

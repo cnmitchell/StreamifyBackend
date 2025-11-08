@@ -22,8 +22,9 @@ public class ContentController {
             @RequestParam(required = false) String genre,
             @RequestParam(required = false) String actor,
             @RequestParam(required = false) String director,
-            @RequestParam(required = false) String keyword) {
-        return contentService.browseMovies(genre, actor, director, keyword);
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) Boolean awardWinning) {
+        return contentService.browseMovies(genre, actor, director, keyword, awardWinning);
     }
 
     @GetMapping("/browse/series") //need to add series to db
@@ -31,13 +32,9 @@ public class ContentController {
             @RequestParam(required = false) String genre,
             @RequestParam(required = false) String actor,
             @RequestParam(required = false) String director,
-            @RequestParam(required = false) String keyword) {
-        return contentService.browseSeries(genre, actor, director, keyword);
-    }
-
-    @GetMapping("/browse/movies/award-winning")
-    public List<Map<String, Object>> awardWinningMovies() {
-        return contentService.awardWinningMovies();
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) Boolean awardWinning) {
+        return contentService.browseSeries(genre, actor, director, keyword, awardWinning);
     }
 
     @GetMapping("/browse/series/not-streamed") //need to add series to db
