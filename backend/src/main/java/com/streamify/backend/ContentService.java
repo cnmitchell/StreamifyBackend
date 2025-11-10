@@ -45,6 +45,10 @@ public class ContentService {
         return contentRepository.membersWhoStreamed(content_id);
     }
 
+    public List<Map<String, Object>> allContent(){
+        return contentRepository.allContent();
+    }
+
     public List<Map<String, Object>> last24hTrends() {
         return contentRepository.last24hTrends();
     }

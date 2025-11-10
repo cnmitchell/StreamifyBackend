@@ -140,7 +140,14 @@ public class ContentRepository {
         return jdbcTemplate.queryForList(sql, content_id);
     }
 
-    //get last 24 hours of streaming trends
+    public List<Map<String, Object>> allContent(){
+        String sql = "SELECT c.content_id, c.content_name " +
+                "FROM content c";
+
+        return jdbcTemplate.queryForList(sql);
+    }
+
+    //get last 24 hours of streaming trends commented out to test last 24 streamed
     public List<Map<String, Object>> last24hTrends() {
         String sql = "SELECT sh.stream_id, c.content_id, c.content_name, sh.email, sh.timestamp " +
                 "FROM streamingHistory sh " +
@@ -150,6 +157,7 @@ public class ContentRepository {
 
         return jdbcTemplate.queryForList(sql);
     }
+
 
     //get top ten streamed content
     public List<Map<String, Object>> topTenStreamed() {

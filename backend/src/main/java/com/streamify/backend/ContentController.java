@@ -30,6 +30,7 @@ public class ContentController {
         }
     }
 
+
     @GetMapping("/browse/movies")
     public List<Map<String, Object>> browseMovies(
             @RequestParam(required = false) String genre,
@@ -68,6 +69,11 @@ public class ContentController {
     @GetMapping("/members-who-streamed") //getting empty array back??
     public List<Map<String, Object>> membersWhoStreamed(@RequestParam String content_id) {
         return contentService.membersWhoStreamed(content_id);
+    }
+
+    @GetMapping("/all-content")
+    public List<Map<String, Object>> allContent() {
+        return contentService.allContent();
     }
 
     @GetMapping("/last-24h-trends") //need to test again
