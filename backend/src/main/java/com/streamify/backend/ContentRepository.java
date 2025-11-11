@@ -2,6 +2,8 @@ package com.streamify.backend;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -47,12 +49,10 @@ public class ContentRepository {
     }
 
     // Browse series by keyword, actor, director, genre
-    public List<Map<String, Object>> browseSeries(String genre, String actor, String director, String keyword, Boolean awardWinning) {
-        StringBuilder sql = new StringBuilder("SELECT DISTINCT c.content_id, c.content_name, c.release_date, s.total_seasons, s.total_episodes, c.poster_url, " +
-                "e.title AS episode_title, e.season_number, e.episode_number, e.release_date AS episode_release_date, c.IMDB_link, c.genre " +
+    public List<Map<String, Object>> browseSeries(String genre, String actor, String director, String keyword, Boolean awardWinning, String email) {
+        StringBuilder sql = new StringBuilder("SELECT DISTINCT c.content_id, c.content_name, c.poster_url " +
                 "FROM content c " +
                 "JOIN series s ON c.content_id = s.content_id " +
-                "LEFT JOIN episode e ON c.content_id = e.content_id " +
                 "LEFT JOIN castIn ci ON c.content_id = ci.content_id " +
                 "LEFT JOIN directedBy db ON c.content_id = db.content_id " +
                 "LEFT JOIN person actor ON ci.person_id = actor.person_id " +
@@ -67,27 +67,18 @@ public class ContentRepository {
                 "  AND director.name LIKE CONCAT('%', ?, '%') " +
                 "  AND c.content_name LIKE CONCAT('%', ?, '%')");
 
-        return jdbcTemplate.queryForList(sql.toString(),
-                genre != null ? genre : "",
-                actor != null ? actor : "",
-                director != null ? director : "",
-                keyword != null ? keyword : "");
-    }
+        List<Object> params = new ArrayList<>();
+        params.add(genre != null ? genre : "");
+        params.add(actor != null ? actor : "");
+        params.add(director != null ? director : "");
+        params.add(keyword != null ? keyword : "");
 
-    //browse series never streamed before
-    public List<Map<String, Object>> notStreamedSeries(String email) {
-        String sql = "SELECT DISTINCT c.content_id, c.content_name, c.release_date, s.total_seasons, s.total_episodes, " +
-                "e.title AS episode_title, e.season_number, e.episode_number, e.release_date AS episode_release_date, c.IMDB_link, c.genre " +
-                "FROM content c " +
-                "JOIN series s ON c.content_id = s.content_id " +
-                "LEFT JOIN episode e ON c.content_id = e.content_id " +
-                "WHERE c.content_id NOT IN(" +
-                    "SELECT content_id " +
-                    "FROM streamingHistory " +
-                    "WHERE email = ?" +
-                ")";
+        if (email != null && !email.isEmpty()) {
+            sql.append(" AND c.content_id NOT IN (SELECT content_id FROM streamingHistory WHERE email = ?)");
+            params.add(email);
+        }
 
-        return jdbcTemplate.queryForList(sql, email);
+        return jdbcTemplate.queryForList(sql.toString(), params.toArray());
     }
 
     //get streaming history
@@ -125,6 +116,24 @@ public class ContentRepository {
                 "FROM sequels_cte s " +
                 "JOIN content c ON s.content_id = c.content_id " +
                 "WHERE s.level > 1";
+        return jdbcTemplate.queryForList(sql, content_id);
+    }
+
+    public List<Map<String, Object>> getSeriesDetails(String content_id) {
+        String sql = "SELECT c.poster_url, c.IMDB_link, c.content_name, c.release_date, c.genre, " +
+                "(SELECT GROUP_CONCAT(p.name SEPARATOR ', ') FROM person p JOIN directedBy db ON p.person_id = db.person_id WHERE db.content_id = c.content_id) AS director, " +
+                "(SELECT GROUP_CONCAT(p.name SEPARATOR ', ') FROM person p JOIN castIn ci ON p.person_id = ci.person_id WHERE ci.content_id = c.content_id) AS cast, " +
+                "(SELECT GROUP_CONCAT(a.award_name SEPARATOR ', ') FROM award a JOIN awardedTo at ON a.award_name = at.award_name WHERE at.content_id = c.content_id) AS awards " +
+                "FROM content c " +
+                "WHERE c.content_id = ?";
+        return jdbcTemplate.queryForList(sql, content_id);
+    }
+
+    public List<Map<String, Object>> getSeriesSeasons(String content_id) {
+        String sql = "SELECT season_number, episode_number, title " +
+                "FROM episode " +
+                "WHERE content_id = ? " +
+                "ORDER BY season_number, episode_number";
         return jdbcTemplate.queryForList(sql, content_id);
     }
 

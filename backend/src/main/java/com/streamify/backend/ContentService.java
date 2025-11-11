@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class ContentService {
@@ -22,12 +23,8 @@ public class ContentService {
         return contentRepository.browseMovies(genre, actor, director, keyword, awardWinning);
     }
 
-    public List<Map<String, Object>> browseSeries(String genre, String actor, String director, String keyword, Boolean awardWinning) {
-        return contentRepository.browseSeries(genre, actor, director, keyword, awardWinning);
-    }
-
-    public List<Map<String, Object>> notStreamedSeries(String email) {
-        return contentRepository.notStreamedSeries(email);
+    public List<Map<String, Object>> browseSeries(String genre, String actor, String director, String keyword, Boolean awardWinning, String email) {
+        return contentRepository.browseSeries(genre, actor, director, keyword, awardWinning, email);
     }
 
     public List<Map<String, Object>> streamingHistory(String email) {
@@ -39,6 +36,23 @@ public class ContentService {
         movieDetails.put("details", contentRepository.getMovieDetails(content_id));
         movieDetails.put("sequels", contentRepository.getMovieSequels(content_id));
         return movieDetails;
+    }
+
+    public Map<String, Object> getSeriesDetails(String content_id) {
+        Map<String, Object> seriesDetails = new HashMap<>();
+        seriesDetails.put("details", contentRepository.getSeriesDetails(content_id));
+        List<Map<String, Object>> seasons = contentRepository.getSeriesSeasons(content_id);
+
+        Map<Object, List<Map<String, Object>>> groupedSeasons = seasons.stream()
+                .collect(Collectors.groupingBy(m -> m.get("season_number")));
+
+        groupedSeasons.forEach((seasonNumber, episodes) -> {
+            episodes.forEach(episode -> episode.remove("season_number"));
+        });
+
+        seriesDetails.put("content", groupedSeasons);
+        seriesDetails.put("num_seasons", groupedSeasons.size());
+        return seriesDetails;
     }
 
     public List<Map<String, Object>> membersWhoStreamed(String content_id) {

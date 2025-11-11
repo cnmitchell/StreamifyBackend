@@ -41,19 +41,15 @@ public class ContentController {
         return contentService.browseMovies(genre, actor, director, keyword, awardWinning);
     }
 
-    @GetMapping("/browse/series") //need to add series to db
+    @GetMapping("/browse/series")
     public List<Map<String, Object>> browseSeries(
             @RequestParam(required = false) String genre,
             @RequestParam(required = false) String actor,
             @RequestParam(required = false) String director,
             @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) Boolean awardWinning) {
-        return contentService.browseSeries(genre, actor, director, keyword, awardWinning);
-    }
-
-    @GetMapping("/browse/series/not-streamed") //need to add series to db
-    public List<Map<String, Object>> notStreamedSeries(@RequestParam String email) {
-        return contentService.notStreamedSeries(email);
+            @RequestParam(required = false) Boolean awardWinning,
+            @RequestParam(required = false) String email) {
+        return contentService.browseSeries(genre, actor, director, keyword, awardWinning, email);
     }
 
     @GetMapping("/streaming-history")
@@ -64,6 +60,11 @@ public class ContentController {
     @GetMapping("/movie-details")
     public Map<String, Object> getMovieDetails(@RequestParam String content_id) {
         return contentService.getMovieDetails(content_id);
+    }
+
+    @GetMapping("/series-details")
+    public Map<String, Object> getSeriesDetails(@RequestParam String content_id) {
+        return contentService.getSeriesDetails(content_id);
     }
 
     @GetMapping("/members-who-streamed") //getting empty array back??
