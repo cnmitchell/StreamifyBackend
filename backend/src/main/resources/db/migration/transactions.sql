@@ -1,3 +1,6 @@
+--This logic needs to be implemented in the java files, not in the DB schema
+--So I will keep this file here for reference when adding these transactions to the java application
+
 -- Add Member
 START TRANSACTION;
 INSERT INTO users (email, password, name, street, city, state, country, phone)
