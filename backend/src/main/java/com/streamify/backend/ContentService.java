@@ -1,5 +1,6 @@
 package com.streamify.backend;
 
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -74,4 +75,82 @@ public class ContentService {
     public List<Map<String, Object>> getAllMembers() {
         return contentRepository.getAllMembers();
     }
+
+    // Transactions
+    @Transactional
+    public void addMember(String email, String password, String name, String street,
+                          String city, String state, String country, String phone, String member_id){
+        contentRepository.insertUser(email, password, name, street, city, state, country, phone);
+        contentRepository.insertMember(email, member_id);
+    }
+
+    @Transactional
+    public void addMovie(String content_id, String content_name, String release_date,
+                         String IMDB_link, String genre, String poster_url, String sequel_to){
+        contentRepository.insertContent(content_id, content_name, release_date, IMDB_link, genre,
+                poster_url);
+        contentRepository.insertMovie(content_id, sequel_to);
+    }
+
+    @Transactional
+    public void addSeries(String content_id, String content_name, String release_date,
+                          String IMDB_link, String genre, String poster_url,
+                          String total_episodes, String total_seasons){
+        contentRepository.insertContent(content_id, content_name, release_date, IMDB_link, genre,
+                poster_url);
+        contentRepository.insertSeries(content_id, total_episodes, total_seasons);
+    }
+
+    @Transactional
+    public void addEpisode(String content_id, String episode_id, String season_number,
+                           String episode_number, String title, String release_date){
+        contentRepository.insertEpisode(content_id,episode_id, season_number, episode_number, title, release_date);
+    }
+
+    @Transactional
+    public void addToCurrentlyStreaming(String stream_id, String email, String content_id){
+        contentRepository.insertHas(stream_id, email, content_id);
+    }
+
+    @Transactional
+    public void deleteMember(String email, String member_id){
+        contentRepository.deleteMember(email, member_id);
+        contentRepository.deleteUser(email);
+    }
+
+    @Transactional
+    public void deleteMovie(String content_id){
+        contentRepository.deleteMovie(content_id);
+        contentRepository.deleteContent(content_id);
+    }
+
+    @Transactional
+    public void deleteSeries(String content_id){
+        contentRepository.deleteEpisode(content_id);
+        contentRepository.deleteSeries(content_id);
+        contentRepository.deleteContent(content_id);
+    }
+
+    @Transactional
+    public void deleteEpisode(String content_id, String episode_id){
+        contentRepository.deleteEpisode(content_id, episode_id);
+    }
+
+    @Transactional
+    public void changeEmail(String newEmail, String oldEmail){
+        contentRepository.updateUserEmail(newEmail,  oldEmail);
+        contentRepository.updateMemberEmail(newEmail, oldEmail);
+    }
+
+    @Transactional
+    public void changeSubscription(String subscription_id, String email){
+        contentRepository.updateMemberSubscription(subscription_id, email);
+    }
+
+    @Transactional
+    public void deleteFromCurrentlyStreaming(String stream_id, String email, String content_id){
+        contentRepository.deleteHas(stream_id, email, content_id);
+    }
+
+
 }

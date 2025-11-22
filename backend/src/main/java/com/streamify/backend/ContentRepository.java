@@ -189,4 +189,105 @@ public class ContentRepository {
                 "LEFT JOIN subscriptionPlan s ON m.subscription_id = s.subscription_id";
         return jdbcTemplate.queryForList(sql);
     }
+
+    // Transactions
+    public void insertUser(String email, String password, String name, String street,
+                          String city, String state, String country, String phone) {
+        String sql = "INSERT INTO users (email, password, name, street, city, state, country, phone) " +
+                "VALUES (?,?,?,?,?,?,?,?)";
+        jdbcTemplate.update(sql, email, password, name, street, city, state, country, phone);
+    }
+
+    public void insertMember(String email, String member_id) {
+        String sql = "INSERT INTO member (email, member_id) " +
+                "VALUES (?,?)";
+        jdbcTemplate.update(sql, email, member_id);
+    }
+
+    public void insertContent(String content_id, String content_name, String release_date,
+                              String IMDB_link, String genre, String poster_url) {
+        String sql = "INSERT INTO content (content_id, content_name, release_date," +
+                "IMDB_link, genre, poster_url) VALUES (?,?,?,?,?,?)";
+        jdbcTemplate.update(sql,content_id, content_name, release_date, IMDB_link, genre, poster_url);
+    }
+
+    public void insertMovie(String content_id, String sequel_to){
+        String sql = "INSERT INTO movie(content_id, sequel_to) VALUES (?,?)";
+        jdbcTemplate.update(sql, content_id, sequel_to);
+    }
+
+    public void insertSeries(String content_id, String total_episodes,String total_seasons){
+        String sql = "INSERT INTO series(content_id, total_episodes, total_seasons) VALUES (?,?,?)";
+        jdbcTemplate.update(sql, content_id, total_episodes, total_seasons);
+    }
+
+    public void insertEpisode(String content_id, String episode_id, String season_number,
+                              String episode_number, String title, String release_date){
+        String sql = "INSERT into episode(content_id, episode_id, season_number, episode_number, title, release_date) " +
+                "VALUES (?,?,?,?,?,?)";
+        jdbcTemplate.update(sql, content_id, episode_id, season_number, episode_number, title, release_date);
+    }
+
+    public void insertHas(String stream_id, String email, String content_id){
+        String sql = "INSERT INTO has(stream_id, email, content_id) VALUES (?,?,?)";
+        jdbcTemplate.update(sql, stream_id, email, content_id);
+    }
+
+    public void deleteMember(String email, String member_id){
+        String sql = "DELETE FROM member WHERE email = ? AND member_id = ?";
+        jdbcTemplate.update(sql, email, member_id);
+    }
+
+    public void deleteUser(String email){
+        String sql = "DELETE FROM users WHERE email = ?";
+        jdbcTemplate.update(sql, email);
+    }
+
+    public void deleteMovie(String content_id){
+        String sql = "DELETE FROM movie WHERE content_id = ?";
+        jdbcTemplate.update(sql, content_id);
+    }
+
+    public void deleteContent(String content_id){
+        String sql = "DELETE FROM content WHERE content_id = ?";
+        jdbcTemplate.update(sql, content_id);
+    }
+
+    public void deleteSeries(String content_id){
+        String sql = "DELETE FROM series WHERE content_id = ?";
+        jdbcTemplate.update(sql, content_id);
+    }
+
+    public void deleteEpisode(String content_id){
+        String sql = "DELETE FROM episode WHERE content_id = ?";
+        jdbcTemplate.update(sql, content_id);
+    }
+
+    public void deleteEpisode(String content_id, String episode_id){
+        String sql = "DELETE FROM episode WHERE content_id = ? AND  episode_id = ?";
+        jdbcTemplate.update(sql, content_id, episode_id);
+    }
+    
+    public void deleteHas(String stream_id, String email, String content_id){
+        String sql = "DELETE FROM has WHERE  stream_id = ? AND email = ? AND content_id = ?";
+        jdbcTemplate.update(sql, stream_id, email, content_id);
+    }
+    
+    public void updateUserEmail(String newEmail, String oldEmail){
+        String sql = "UPDATE users SET email = ? WHERE email = ?";
+        jdbcTemplate.update(sql, newEmail, oldEmail);
+    }
+
+    public void updateMemberEmail(String newEmail, String oldEmail){
+        String sql = "UPDATE member SET email = ? WHERE email = ?";
+        jdbcTemplate.update(sql, newEmail, oldEmail);
+    }
+
+    public void updateMemberSubscription(String subscription_id, String email){
+        String sql = "UPDATE member SET subscription_id = ? WHERE email = ?";
+        jdbcTemplate.update(sql, subscription_id, email);
+    }
+
+
 }
+
