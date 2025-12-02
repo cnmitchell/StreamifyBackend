@@ -171,11 +171,11 @@ public class ContentRepository {
 
     //get top ten streamed content
     public List<Map<String, Object>> topTenStreamed() {
-        String sql = "SELECT c.content_id, c.content_name, COUNT(*) AS stream_count " +
+        String sql = "SELECT c.content_id, c.genre, c.release_date, c.content_name, COUNT(*) AS stream_count " +
                 "FROM streamingHistory sh " +
                 "JOIN content c ON sh.content_id = c.content_id " +
                 "WHERE sh.timestamp >= NOW() - INTERVAL 1 MONTH " +
-                "GROUP BY c.content_id, c.content_name " +
+                "GROUP BY c.content_id, c.content_name, c.genre, c.release_date " +
                 "ORDER BY stream_count DESC " +
                 "LIMIT 10";
 
