@@ -9,7 +9,7 @@ public class AddMemberRequest {
     private String state;
     private String country;
     private String phone;
-    private String member_id;
+    private String subName;
 
     public AddMemberRequest(){
 
@@ -17,7 +17,7 @@ public class AddMemberRequest {
 
     public AddMemberRequest(String email, String password, String name,
                             String street, String city, String state, String country,
-                            String phone, String member_id){
+                            String phone, String subName){
         this.email = email;
         this.password = password;
         this.name = name;
@@ -26,7 +26,7 @@ public class AddMemberRequest {
         this.state = state;
         this.country = country;
         this.phone = phone;
-        this.member_id = member_id;
+        this.subName = subName;
     }
 
     public String getEmail() {return this.email;}
@@ -45,6 +45,6 @@ public class AddMemberRequest {
     public void setCountry(String country) {this.country = country;}
     public String getPhone() {return this.phone;}
     public void setPhone(String phone) {this.phone = phone;}
-    public String getMember_id() {return this.member_id;}
-    public void setMember_id(String member_id) {this.member_id = member_id;}
+    public String getSubName() {return this.subName;}
+    public void setSubName(String subName) {this.subName = subName;}
 }

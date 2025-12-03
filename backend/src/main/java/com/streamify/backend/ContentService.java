@@ -79,36 +79,49 @@ public class ContentService {
     // Transactions
     @Transactional
     public void addMember(String email, String password, String name, String street,
-                          String city, String state, String country, String phone, String member_id){
+                          String city, String state, String country, String phone, String subName){
+        String member_id = nextId("member_id","member","M");
+
+        String subscription_id = contentRepository.findSubscriptionIdByName(subName);
+
         contentRepository.insertUser(email, password, name, street, city, state, country, phone);
-        contentRepository.insertMember(email, member_id);
+        contentRepository.insertMember(email, member_id, subscription_id);
     }
 
     @Transactional
-    public void addMovie(String content_id, String content_name, String release_date,
+    public void addMovie(String content_name, String release_date,
                          String IMDB_link, String genre, String poster_url, String sequel_to){
+
+        String content_id = nextId("content_id","content","C");
+
         contentRepository.insertContent(content_id, content_name, release_date, IMDB_link, genre,
                 poster_url);
         contentRepository.insertMovie(content_id, sequel_to);
     }
 
     @Transactional
-    public void addSeries(String content_id, String content_name, String release_date,
+    public void addSeries(String content_name, String release_date,
                           String IMDB_link, String genre, String poster_url,
                           String total_episodes, String total_seasons){
+
+        String content_id = nextId("content_id","content","C");
+
         contentRepository.insertContent(content_id, content_name, release_date, IMDB_link, genre,
                 poster_url);
         contentRepository.insertSeries(content_id, total_episodes, total_seasons);
     }
 
     @Transactional
-    public void addEpisode(String content_id, String episode_id, String season_number,
+    public void addEpisode(String content_id, String season_number,
                            String episode_number, String title, String release_date){
+        String episode_id = nextEpId(content_id);
+
         contentRepository.insertEpisode(content_id,episode_id, season_number, episode_number, title, release_date);
     }
 
     @Transactional
-    public void addToCurrentlyStreaming(String stream_id, String email, String content_id){
+    public void addToCurrentlyStreaming(String email, String content_id){
+        String stream_id = nextId("stream_id","has","S");
         contentRepository.insertHas(stream_id, email, content_id);
     }
 
@@ -150,6 +163,28 @@ public class ContentService {
     @Transactional
     public void deleteFromCurrentlyStreaming(String stream_id, String email, String content_id){
         contentRepository.deleteHas(stream_id, email, content_id);
+    }
+
+    public String nextId(String primaryKey, String relation, String prefix){
+        String maxId = contentRepository.findMaxLock(primaryKey, relation);
+        int nextIdNum = 1;
+        if (maxId != null){
+            String leadingZeros = maxId.substring(1);
+            int num = Integer.parseInt(leadingZeros);
+            nextIdNum = num + 1;
+        }
+        return prefix + String.format("%04d", nextIdNum);
+    }
+
+    public String nextEpId(String content_id){
+        String maxId = contentRepository.findEpMaxLock(content_id);
+        int nextIdNum = 1;
+        if (maxId != null){
+            String leadingZeros = maxId.substring(1);
+            int num = Integer.parseInt(leadingZeros);
+            nextIdNum = num + 1;
+        }
+        return "E" + String.format("%04d", nextIdNum);
     }
 
 

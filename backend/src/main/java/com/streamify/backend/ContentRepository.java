@@ -199,9 +199,9 @@ public class ContentRepository {
         jdbcTemplate.update(sql, email, password, name, street, city, state, country, phone);
     }
 
-    public void insertMember(String email, String member_id) {
-        String sql = "INSERT INTO member (email, member_id) " +
-                "VALUES (?,?)";
+    public void insertMember(String email, String member_id, String subscription_id) {
+        String sql = "INSERT INTO member (email, member_id, subscription_id) " +
+                "VALUES (?,?,?)";
         jdbcTemplate.update(sql, email, member_id);
     }
 
@@ -289,6 +289,40 @@ public class ContentRepository {
         jdbcTemplate.update(sql, subscription_id, email);
     }
 
+    public String findMaxLock(String primaryKey, String relation){
+        String sql = String.format(
+                "SELECT %s FROM %s ORDER BY %s DESC LIMIT 1 FOR UPDATE",
+                primaryKey,
+                relation,
+                primaryKey
+        );
+        try {
+            return jdbcTemplate.queryForObject(sql, String.class);
+        } catch (org.springframework.dao.EmptyResultDataAccessException e)
+        {
+            return null;
+        }
+    }
 
+    public String findEpMaxLock(String primaryKey){
+        String sql = "SELECT episode_id FROM episode " +
+                "WHERE content_id = ? " +
+                "ORDER BY episode_id DESC LIMIT 1 FOR UPDATE";
+        try {
+            return jdbcTemplate.queryForObject(sql, String.class, primaryKey);
+        } catch (org.springframework.dao.EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+    public String findSubscriptionIdByName(String planName) {
+        String sql = "SELECT subscription_id FROM subscriptionPlan WHERE name = ?";
+
+        try {
+            return jdbcTemplate.queryForObject(sql, String.class, planName);
+        } catch (org.springframework.dao.EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
 }
 

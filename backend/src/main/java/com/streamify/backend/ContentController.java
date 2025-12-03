@@ -19,10 +19,6 @@ public class ContentController {
         this.contentService = contentService;
     }
 
-    private String generateUniqueChar20Id() {
-        return java.util.UUID.randomUUID().toString().replace("-", "").substring(0, 20).toUpperCase(Locale.ROOT);
-    }
-
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
         boolean isAuthenticated = contentService.login(loginRequest.getEmail(), loginRequest.getPassword());
@@ -100,7 +96,6 @@ public class ContentController {
     @PostMapping("/member")
     public ResponseEntity<String> addMember(@RequestBody AddMemberRequest request) {
         try {
-            String id = generateUniqueChar20Id();
             contentService.addMember(
                     request.getEmail(),
                     request.getPassword(),
@@ -110,7 +105,7 @@ public class ContentController {
                     request.getState(),
                     request.getCountry(),
                     request.getPhone(),
-                    id
+                    request.getSubName()
             );
             return ResponseEntity.status(201).body("Member added.");
         } catch (Exception e) {
@@ -121,9 +116,7 @@ public class ContentController {
     @PostMapping("/movie")
     public ResponseEntity<String> addMovie(@RequestBody AddMovieRequest request) {
         try {
-            String id = generateUniqueChar20Id();
             contentService.addMovie(
-                    id,
                     request.getContent_name(),
                     request.getRelease_date(),
                     request.getIMDB_link(),
@@ -140,9 +133,7 @@ public class ContentController {
     @PostMapping("/series")
     public ResponseEntity<String> addSeries(@RequestBody AddSeriesRequest request) {
         try {
-            String id = generateUniqueChar20Id();
             contentService.addSeries(
-                    id,
                     request.getContent_name(),
                     request.getRelease_date(),
                     request.getIMDB_link(),
@@ -160,10 +151,8 @@ public class ContentController {
     @PostMapping("/episode")
     public ResponseEntity<String> addEpisode(@RequestBody AddEpisodeRequest request) {
         try {
-            String id = generateUniqueChar20Id();
             contentService.addEpisode(
                     request.getContent_id(),
-                    id,
                     request.getSeason_number(),
                     request.getEpisode_number(),
                     request.getTitle(),
@@ -178,9 +167,7 @@ public class ContentController {
     @PostMapping("/has")
     public ResponseEntity<String> addStreamed(@RequestBody AddStreamingRequest request) {
         try {
-            String id = generateUniqueChar20Id();
             contentService.addToCurrentlyStreaming(
-                    id,
                     request.getEmail(),
                     request.getContent_id()
             );
@@ -271,8 +258,8 @@ public class ContentController {
     public ResponseEntity<String> changeSubscription(@RequestBody ChangeSubscriptionRequest request) {
         try {
             contentService.changeSubscription(
-                    request.getEmail(),
-                    request.getSubscription_id()
+                    request.getSubscription_id(),
+                    request.getEmail()
             );
             return ResponseEntity.status(200).body("Subscription changed.");
         }

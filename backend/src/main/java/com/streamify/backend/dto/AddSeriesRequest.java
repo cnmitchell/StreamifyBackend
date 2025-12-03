@@ -1,7 +1,6 @@
 package com.streamify.backend.dto;
 
 public class AddSeriesRequest {
-    private String content_id;
     private String content_name;
     private String release_date;
     private String IMDB_link;
@@ -14,10 +13,9 @@ public class AddSeriesRequest {
 
     }
 
-    public AddSeriesRequest(String content_id, String content_name, String release_date,
+    public AddSeriesRequest(String content_name, String release_date,
                            String IMDB_link, String genre, String poster_url,
                             String total_episodes, String total_seasons) {
-        this.content_id = content_id;
         this.content_name = content_name;
         this.release_date = release_date;
         this.IMDB_link = IMDB_link;
@@ -27,12 +25,6 @@ public class AddSeriesRequest {
         this.total_seasons = total_seasons;
     }
 
-    public String getContent_id() {
-        return content_id;
-    }
-    public void setContent_id(String content_id) {
-        this.content_id = content_id;
-    }
     public String getContent_name() {
         return content_name;
     }
