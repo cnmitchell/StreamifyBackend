@@ -202,7 +202,7 @@ public class ContentRepository {
     public void insertMember(String email, String member_id, String subscription_id) {
         String sql = "INSERT INTO member (email, member_id, subscription_id) " +
                 "VALUES (?,?,?)";
-        jdbcTemplate.update(sql, email, member_id);
+        jdbcTemplate.update(sql, email, member_id, subscription_id);
     }
 
     public void insertContent(String content_id, String content_name, String release_date,
