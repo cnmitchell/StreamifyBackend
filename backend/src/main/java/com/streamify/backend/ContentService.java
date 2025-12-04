@@ -1,16 +1,25 @@
 package com.streamify.backend;
 
+import com.streamify.backend.dto.AddFullContentRequest;
+import com.streamify.backend.dto.AwardRequest;
+import com.streamify.backend.dto.EpisodeRequest;
+import com.streamify.backend.dto.PersonRequest;
 import com.streamify.backend.dto.UpdateUserRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
 public class ContentService {
+    private static final Logger logger = LoggerFactory.getLogger(ContentService.class);
+
     private final ContentRepository contentRepository;
 
     public ContentService(ContentRepository contentRepository) {
@@ -87,6 +96,17 @@ public class ContentService {
         return contentRepository.getAllMembers();
     }
 
+    public List<PersonRequest> searchPeople(String name) {
+        List<Map<String, Object>> peopleMaps = contentRepository.searchPeopleByName(name);
+        return peopleMaps.stream().map(map -> {
+            PersonRequest person = new PersonRequest();
+            person.setName((String) map.get("name"));
+            person.setState(Objects.toString(map.get("state"), null));
+            person.setCountry(Objects.toString(map.get("country"), null));
+            return person;
+        }).collect(Collectors.toList());
+    }
+
     // Transactions
     @Transactional
     public void addMember(String email, String password, String name, String street,
@@ -123,17 +143,70 @@ public class ContentService {
     }
 
     @Transactional
-    public void addEpisode(String content_id, String season_number,
-                           String episode_number, String title, String release_date){
+    public void addEpisode(String content_id, int season_number,
+                           int episode_number, String title){
         String episode_id = nextEpId(content_id);
 
-        contentRepository.insertEpisode(content_id,episode_id, season_number, episode_number, title, release_date);
+        contentRepository.insertEpisode(content_id,episode_id, season_number, episode_number, title);
     }
 
     @Transactional
     public void addToCurrentlyStreaming(String email, String content_id){
         String stream_id = nextId("stream_id","has","S");
         contentRepository.insertHas(stream_id, email, content_id);
+    }
+
+    @Transactional
+    public void addFullContent(AddFullContentRequest request) {
+        System.out.println("DEBUG: Entering addFullContent method.");
+        System.out.println("DEBUG: Content Name: " + request.getContent_name());
+        System.out.println("DEBUG: Release Date: " + request.getRelease_date());
+        System.out.println("DEBUG: IMDB Link: " + request.getIMDB_link());
+        System.out.println("DEBUG: Genre: " + request.getGenre());
+        System.out.println("DEBUG: Poster URL: " + request.getPoster_url());
+        System.out.println("DEBUG: Sequel To: " + request.getSequel_to());
+        System.out.println("DEBUG: Total Episodes: " + request.getTotal_episodes());
+        System.out.println("DEBUG: Total Seasons: " + request.getTotal_seasons());
+
+        String contentId = nextId("content_id", "content", "C");
+        contentRepository.insertContent(contentId, request.getContent_name(), request.getRelease_date(),
+                request.getIMDB_link(), request.getGenre(), request.getPoster_url());
+
+        if (request.getTotal_episodes() != null || request.getTotal_seasons() != null) {
+            contentRepository.insertSeries(contentId, request.getTotal_episodes(), request.getTotal_seasons());
+            if (request.getEpisodes() != null) {
+                for (EpisodeRequest episode : request.getEpisodes()) {
+                    addEpisode(contentId, episode.getSeason_number(), episode.getEpisode_number(),
+                            episode.getTitle());
+                }
+            }
+        } else {
+            contentRepository.insertMovie(contentId, request.getSequel_to());
+        }
+
+        for (PersonRequest person : request.getCast()) {
+            String personId = contentRepository.findPersonIdByName(person.getName());
+            if (personId == null) {
+                personId = nextId("person_id", "person", "P");
+                contentRepository.insertPerson(personId, person.getName(), person.getState(), person.getCountry());
+            }
+            contentRepository.insertCastIn(contentId, personId);
+        }
+
+        for (PersonRequest person : request.getDirectors()) {
+            String personId = contentRepository.findPersonIdByName(person.getName());
+            if (personId == null) {
+                personId = nextId("person_id", "person", "P");
+                contentRepository.insertPerson(personId, person.getName(), person.getState(), person.getCountry());
+            }
+            contentRepository.insertDirectedBy(contentId, personId);
+        }
+
+        for (AwardRequest award : request.getAwards()) {
+            contentRepository.insertAward(award.getAward_name());
+            contentRepository.insertAwardedTo(contentId, award.getAward_name(), award.getAward_year());
+        }
+        System.out.println("DEBUG: Exiting addFullContent method.");
     }
 
     @Transactional
@@ -153,6 +226,15 @@ public class ContentService {
         contentRepository.deleteEpisode(content_id);
         contentRepository.deleteSeries(content_id);
         contentRepository.deleteContent(content_id);
+    }
+
+    @Transactional
+    public void deleteContent(String content_id) {
+        if (contentRepository.isSeries(content_id)) {
+            deleteSeries(content_id);
+        } else {
+            deleteMovie(content_id);
+        }
     }
 
     @Transactional

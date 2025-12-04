@@ -4,6 +4,8 @@ import com.streamify.backend.dto.*;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
@@ -11,6 +13,8 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/content")
 public class ContentController {
+    private static final Logger logger = LoggerFactory.getLogger(ContentController.class);
+
     private final ContentService contentService;
 
     public ContentController(ContentService contentService) {
@@ -90,6 +94,22 @@ public class ContentController {
         return contentService.getAllMembers();
     }
 
+    @GetMapping("/person/search")
+    public ResponseEntity<List<PersonRequest>> searchPeople(@RequestParam String name) {
+        System.out.println("DEBUG: Received request to search people with name: " + name); // System.out.println for debugging
+        logger.debug("Received request to search people with name: {}", name);
+        try {
+            List<PersonRequest> people = contentService.searchPeople(name);
+            System.out.println("DEBUG: Successfully searched people. Found " + people.size() + " results."); // System.out.println
+            return ResponseEntity.ok(people);
+        } catch (Exception e) {
+            System.err.println("ERROR: Error searching people with name: " + name + " - " + e.getMessage()); // System.err.println
+            e.printStackTrace(); // Print stack trace to System.err
+            logger.error("Error searching people with name: {}", name, e); // Log the full exception
+            return ResponseEntity.status(500).body(null); // Or a more specific error handling
+        }
+    }
+
     // Transactions
 
     @PostMapping("/member")
@@ -154,8 +174,7 @@ public class ContentController {
                     request.getContent_id(),
                     request.getSeason_number(),
                     request.getEpisode_number(),
-                    request.getTitle(),
-                    request.getRelease_date()
+                    request.getTitle()
             );
             return ResponseEntity.status(201).body("Episode added.");
         } catch (Exception e) {
@@ -176,6 +195,27 @@ public class ContentController {
         }
     }
 
+    @PostMapping("/full-content")
+    public ResponseEntity<Void> addFullContent(@RequestBody AddFullContentRequest request) {
+        try {
+            contentService.addFullContent(request);
+            return ResponseEntity.status(201).build(); // Return 201 with empty body
+        } catch (Exception e) {
+            logger.error("Error adding full content: {}", e.getMessage(), e);
+            return ResponseEntity.status(400).build(); // Return 400 for client-side errors
+        }
+    }
+
+    @DeleteMapping("/{content_id}")
+    public ResponseEntity<String> deleteContent(@PathVariable String content_id) {
+        try {
+            contentService.deleteContent(content_id);
+            return ResponseEntity.status(204).body("Content deleted.");
+        } catch (Exception e) {
+            return ResponseEntity.status(400).body(e.getMessage());
+        }
+    }
+
     @DeleteMapping("/member")
     public ResponseEntity<String> deleteMember(@RequestBody DeleteMemberRequest request) {
         try {
@@ -184,30 +224,6 @@ public class ContentController {
                     request.getMember_id()
             );
             return ResponseEntity.status(204).body("Member deleted.");
-        } catch (Exception e) {
-            return ResponseEntity.status(400).body(e.getMessage());
-        }
-    }
-
-    @DeleteMapping("/movie")
-    public ResponseEntity<String> deleteMovie(@RequestBody DeleteMovieRequest request) {
-        try {
-            contentService.deleteMovie(
-                    request.getContent_id()
-            );
-            return ResponseEntity.status(204).body("Movie deleted.");
-        } catch (Exception e) {
-            return ResponseEntity.status(400).body(e.getMessage());
-        }
-    }
-
-    @DeleteMapping("/series")
-    public ResponseEntity<String> deleteSeries(@RequestBody DeleteSeriesRequest request) {
-        try {
-            contentService.deleteSeries(
-                    request.getContent_id()
-            );
-            return ResponseEntity.status(204).body("Series deleted.");
         } catch (Exception e) {
             return ResponseEntity.status(400).body(e.getMessage());
         }

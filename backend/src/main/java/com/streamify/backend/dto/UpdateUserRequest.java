@@ -1,7 +1,7 @@
 package com.streamify.backend.dto;
 
 public class UpdateUserRequest {
-    private String email; // To identify the user
+    private String email;
     private String newEmail;
     private String password;
     private String name;
@@ -14,8 +14,6 @@ public class UpdateUserRequest {
 
     public UpdateUserRequest() {
     }
-
-    // Getters and setters for all fields
 
     public String getEmail() {
         return email;

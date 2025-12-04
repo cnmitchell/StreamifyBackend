@@ -237,16 +237,55 @@ public class ContentRepository {
         jdbcTemplate.update(sql, content_id, total_episodes, total_seasons);
     }
 
-    public void insertEpisode(String content_id, String episode_id, String season_number,
-                              String episode_number, String title, String release_date){
-        String sql = "INSERT into episode(content_id, episode_id, season_number, episode_number, title, release_date) " +
-                "VALUES (?,?,?,?,?,?)";
-        jdbcTemplate.update(sql, content_id, episode_id, season_number, episode_number, title, release_date);
+    public void insertEpisode(String content_id, String episode_id, int season_number,
+                              int episode_number, String title){
+        String sql = "INSERT into episode(content_id, episode_id, season_number, episode_number, title) " +
+                "VALUES (?,?,?,?,?)";
+        jdbcTemplate.update(sql, content_id, episode_id, season_number, episode_number, title);
     }
 
     public void insertHas(String stream_id, String email, String content_id){
         String sql = "INSERT INTO has(stream_id, email, content_id) VALUES (?,?,?)";
         jdbcTemplate.update(sql, stream_id, email, content_id);
+    }
+
+    public String findPersonIdByName(String name) {
+        String sql = "SELECT person_id FROM person WHERE name = ?";
+        try {
+            return jdbcTemplate.queryForObject(sql, String.class, name);
+        } catch (org.springframework.dao.EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+    public List<Map<String, Object>> searchPeopleByName(String name) {
+        String sql = "SELECT person_id, name, state, country FROM person WHERE name LIKE CONCAT('%', ?, '%')";
+        return jdbcTemplate.queryForList(sql, name);
+    }
+
+    public void insertPerson(String personId, String name, String state, String country) {
+        String sql = "INSERT INTO person (person_id, name, state, country) VALUES (?, ?, ?, ?)";
+        jdbcTemplate.update(sql, personId, name, state, country);
+    }
+
+    public void insertCastIn(String contentId, String personId) {
+        String sql = "INSERT INTO castIn (content_id, person_id) VALUES (?, ?)";
+        jdbcTemplate.update(sql, contentId, personId);
+    }
+
+    public void insertDirectedBy(String contentId, String personId) {
+        String sql = "INSERT INTO directedBy (content_id, person_id) VALUES (?, ?)";
+        jdbcTemplate.update(sql, contentId, personId);
+    }
+
+    public void insertAward(String awardName) {
+        String sql = "INSERT IGNORE INTO award (award_name) VALUES (?)";
+        jdbcTemplate.update(sql, awardName);
+    }
+
+    public void insertAwardedTo(String contentId, String awardName, String awardYear) {
+        String sql = "INSERT INTO awardedTo (content_id, award_name, award_year) VALUES (?, ?, ?)";
+        jdbcTemplate.update(sql, contentId, awardName, awardYear);
     }
 
     public void deleteMember(String email, String member_id){
@@ -378,5 +417,11 @@ public class ContentRepository {
         } catch (org.springframework.dao.EmptyResultDataAccessException e) {
             return null;
         }
+    }
+
+    public boolean isSeries(String content_id) {
+        String sql = "SELECT COUNT(*) FROM series WHERE content_id = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, new Object[]{content_id}, Integer.class);
+        return count != null && count > 0;
     }
 }
