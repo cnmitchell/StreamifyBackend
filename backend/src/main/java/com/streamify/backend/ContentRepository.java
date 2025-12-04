@@ -24,7 +24,8 @@ public class ContentRepository {
     }
 
     public Map<String, Object> getMemberByEmail(String email) {
-        String sql = "SELECT u.email, u.name, u.street, u.city, u.state, u.country, u.phone, m.member_id, s.name AS subscription_name, s.subscription_id " +
+        String sql = "SELECT u.email, u.name, u.street, u.city, u.state, u.country, u.phone, m.member_id, s.name AS subscription_name, s.subscription_id, " +
+                "EXISTS(SELECT 1 FROM admin a WHERE a.email = u.email) AS isAdmin " +
                 "FROM users u " +
                 "LEFT JOIN member m ON u.email = m.email " +
                 "LEFT JOIN subscriptionPlan s ON m.subscription_id = s.subscription_id " +
