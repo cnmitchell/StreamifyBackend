@@ -1,4 +1,4 @@
-package com.streamify.backend;
+package com.streamify.backend.dto;
 
 public class LoginRequest {
     private String email;

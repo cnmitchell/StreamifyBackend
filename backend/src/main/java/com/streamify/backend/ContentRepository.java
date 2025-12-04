@@ -1,5 +1,6 @@
 package com.streamify.backend;
 
+import com.streamify.backend.dto.UpdateUserRequest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -20,6 +21,19 @@ public class ContentRepository {
         String sql = "SELECT COUNT(*) FROM users WHERE email = ? AND password = ?";
         Integer count = jdbcTemplate.queryForObject(sql, new Object[]{email, password}, Integer.class);
         return count != null && count > 0;
+    }
+
+    public Map<String, Object> getMemberByEmail(String email) {
+        String sql = "SELECT u.email, u.name, u.street, u.city, u.state, u.country, u.phone, m.member_id, s.name AS subscription_name, s.subscription_id " +
+                "FROM users u " +
+                "LEFT JOIN member m ON u.email = m.email " +
+                "LEFT JOIN subscriptionPlan s ON m.subscription_id = s.subscription_id " +
+                "WHERE u.email = ?";
+        try {
+            return jdbcTemplate.queryForMap(sql, email);
+        } catch (org.springframework.dao.EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
     // Browse movies by keyword, actor, director, genre
@@ -268,25 +282,65 @@ public class ContentRepository {
         String sql = "DELETE FROM episode WHERE content_id = ? AND  episode_id = ?";
         jdbcTemplate.update(sql, content_id, episode_id);
     }
-    
+
     public void deleteHas(String stream_id, String email, String content_id){
         String sql = "DELETE FROM has WHERE  stream_id = ? AND email = ? AND content_id = ?";
         jdbcTemplate.update(sql, stream_id, email, content_id);
     }
-    
-    public void updateUserEmail(String newEmail, String oldEmail){
-        String sql = "UPDATE users SET email = ? WHERE email = ?";
-        jdbcTemplate.update(sql, newEmail, oldEmail);
-    }
 
-    public void updateMemberEmail(String newEmail, String oldEmail){
-        String sql = "UPDATE member SET email = ? WHERE email = ?";
-        jdbcTemplate.update(sql, newEmail, oldEmail);
-    }
+    public void updateUser(UpdateUserRequest request) {
+        StringBuilder sql = new StringBuilder("UPDATE users SET ");
+        List<Object> params = new ArrayList<>();
 
-    public void updateMemberSubscription(String subscription_id, String email){
-        String sql = "UPDATE member SET subscription_id = ? WHERE email = ?";
-        jdbcTemplate.update(sql, subscription_id, email);
+        if (request.getNewEmail() != null) {
+            sql.append("email = ?, ");
+            params.add(request.getNewEmail());
+        }
+        if (request.getPassword() != null) {
+            sql.append("password = ?, ");
+            params.add(request.getPassword());
+        }
+        if (request.getName() != null) {
+            sql.append("name = ?, ");
+            params.add(request.getName());
+        }
+        if (request.getStreet() != null) {
+            sql.append("street = ?, ");
+            params.add(request.getStreet());
+        }
+        if (request.getCity() != null) {
+            sql.append("city = ?, ");
+            params.add(request.getCity());
+        }
+        if (request.getState() != null) {
+            sql.append("state = ?, ");
+            params.add(request.getState());
+        }
+        if (request.getCountry() != null) {
+            sql.append("country = ?, ");
+            params.add(request.getCountry());
+        }
+        if (request.getPhone() != null) {
+            sql.append("phone = ?, ");
+            params.add(request.getPhone());
+        }
+
+        if (!params.isEmpty()) {
+            sql.setLength(sql.length() - 2);
+            sql.append(" WHERE email = ?");
+            params.add(request.getEmail());
+            jdbcTemplate.update(sql.toString(), params.toArray());
+        }
+
+        if (request.getNewEmail() != null) {
+            String updateMemberSql = "UPDATE member SET email = ? WHERE email = ?";
+            jdbcTemplate.update(updateMemberSql, request.getNewEmail(), request.getEmail());
+        }
+
+        if (request.getSubscriptionId() != null) {
+            String updateSubscriptionSql = "UPDATE member SET subscription_id = ? WHERE email = ?";
+            jdbcTemplate.update(updateSubscriptionSql, request.getSubscriptionId(), request.getNewEmail() != null ? request.getNewEmail() : request.getEmail());
+        }
     }
 
     public String findMaxLock(String primaryKey, String relation){
@@ -325,4 +379,3 @@ public class ContentRepository {
         }
     }
 }
-

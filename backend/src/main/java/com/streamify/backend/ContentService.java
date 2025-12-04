@@ -1,5 +1,6 @@
 package com.streamify.backend;
 
+import com.streamify.backend.dto.UpdateUserRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,10 @@ public class ContentService {
 
     public boolean login(String email, String password) {
         return contentRepository.login(email, password);
+    }
+
+    public Map<String, Object> getMemberByEmail(String email) {
+        return contentRepository.getMemberByEmail(email);
     }
 
     public List<Map<String, Object>> browseMovies(String genre, String actor, String director, String keyword, Boolean awardWinning) {
@@ -47,9 +52,7 @@ public class ContentService {
         Map<Object, List<Map<String, Object>>> groupedSeasons = seasons.stream()
                 .collect(Collectors.groupingBy(m -> m.get("season_number")));
 
-        groupedSeasons.forEach((seasonNumber, episodes) -> {
-            episodes.forEach(episode -> episode.remove("season_number"));
-        });
+        groupedSeasons.forEach((seasonNumber, episodes) -> episodes.forEach(episode -> episode.remove("season_number")));
 
         seriesDetails.put("content", groupedSeasons);
         seriesDetails.put("num_seasons", groupedSeasons.size());
@@ -150,19 +153,13 @@ public class ContentService {
     }
 
     @Transactional
-    public void changeEmail(String newEmail, String oldEmail){
-        contentRepository.updateUserEmail(newEmail,  oldEmail);
-        contentRepository.updateMemberEmail(newEmail, oldEmail);
-    }
-
-    @Transactional
-    public void changeSubscription(String subscription_id, String email){
-        contentRepository.updateMemberSubscription(subscription_id, email);
-    }
-
-    @Transactional
     public void deleteFromCurrentlyStreaming(String stream_id, String email, String content_id){
         contentRepository.deleteHas(stream_id, email, content_id);
+    }
+
+    @Transactional
+    public void updateUser(UpdateUserRequest request) {
+        contentRepository.updateUser(request);
     }
 
     public String nextId(String primaryKey, String relation, String prefix){
@@ -186,6 +183,4 @@ public class ContentService {
         }
         return "E" + String.format("%04d", nextIdNum);
     }
-
-
 }

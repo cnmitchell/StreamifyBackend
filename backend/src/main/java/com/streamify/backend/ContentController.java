@@ -2,12 +2,10 @@ package com.streamify.backend;
 
 import com.streamify.backend.dto.*;
 
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 @RestController
@@ -20,10 +18,11 @@ public class ContentController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         boolean isAuthenticated = contentService.login(loginRequest.getEmail(), loginRequest.getPassword());
         if (isAuthenticated) {
-            return ResponseEntity.ok("Login successful");
+            Map<String, Object> memberDetails = contentService.getMemberByEmail(loginRequest.getEmail());
+            return ResponseEntity.ok(memberDetails);
         } else {
             return ResponseEntity.status(401).body("Invalid credentials");
         }
@@ -241,33 +240,13 @@ public class ContentController {
         }
     }
 
-    @PutMapping("/member")
-    public ResponseEntity<String> changeEmail(@RequestBody ChangeEmailRequest request) {
+    @PutMapping("/user")
+    public ResponseEntity<String> updateUser(@RequestBody UpdateUserRequest request) {
         try {
-            contentService.changeEmail(
-                    request.getNew_email(),
-                    request.getOld_email()
-            );
-            return ResponseEntity.status(200).body("Email changed.");
+            contentService.updateUser(request);
+            return ResponseEntity.status(200).body("User updated.");
         } catch (Exception e) {
             return ResponseEntity.status(400).body(e.getMessage());
         }
     }
-
-    @PutMapping("/subscription")
-    public ResponseEntity<String> changeSubscription(@RequestBody ChangeSubscriptionRequest request) {
-        try {
-            contentService.changeSubscription(
-                    request.getSubscription_id(),
-                    request.getEmail()
-            );
-            return ResponseEntity.status(200).body("Subscription changed.");
-        }
-        catch (Exception e) {
-            return ResponseEntity.status(400).body(e.getMessage());
-        }
-
-    }
-
-
 }
