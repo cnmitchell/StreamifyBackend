@@ -187,7 +187,8 @@ public class ContentController {
         try {
             contentService.addToCurrentlyStreaming(
                     request.getEmail(),
-                    request.getContent_id()
+                    request.getContent_id(),
+                    request.getEpisode_id()
             );
             return ResponseEntity.status(201).body("Stream added.");
         } catch (Exception e) {
@@ -246,7 +247,6 @@ public class ContentController {
     public ResponseEntity<String> deleteStreamed(@RequestBody DeleteStreamingRequest request) {
         try {
             contentService.deleteFromCurrentlyStreaming(
-                    request.getStream_id(),
                     request.getEmail(),
                     request.getContent_id()
             );

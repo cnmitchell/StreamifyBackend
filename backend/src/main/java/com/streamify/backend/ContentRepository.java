@@ -244,9 +244,9 @@ public class ContentRepository {
         jdbcTemplate.update(sql, content_id, episode_id, season_number, episode_number, title);
     }
 
-    public void insertHas(String stream_id, String email, String content_id){
-        String sql = "INSERT INTO has(stream_id, email, content_id) VALUES (?,?,?)";
-        jdbcTemplate.update(sql, stream_id, email, content_id);
+    public void insertStream(String email, String content_id, String episode_id){
+        String sql = "INSERT INTO stream(email, content_id, episode_id) VALUES (?,?,?)";
+        jdbcTemplate.update(sql, email, content_id,episode_id);
     }
 
     public String findPersonIdByName(String name) {
@@ -323,9 +323,9 @@ public class ContentRepository {
         jdbcTemplate.update(sql, content_id, episode_id);
     }
 
-    public void deleteHas(String stream_id, String email, String content_id){
-        String sql = "DELETE FROM has WHERE  stream_id = ? AND email = ? AND content_id = ?";
-        jdbcTemplate.update(sql, stream_id, email, content_id);
+    public void deleteStream(String email, String content_id){
+        String sql = "DELETE FROM stream WHERE email = ? AND content_id = ?";
+        jdbcTemplate.update(sql, email, content_id);
     }
 
     public void updateUser(UpdateUserRequest request) {

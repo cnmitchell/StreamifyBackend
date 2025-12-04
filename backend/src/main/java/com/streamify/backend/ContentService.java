@@ -151,9 +151,8 @@ public class ContentService {
     }
 
     @Transactional
-    public void addToCurrentlyStreaming(String email, String content_id){
-        String stream_id = nextId("stream_id","has","S");
-        contentRepository.insertHas(stream_id, email, content_id);
+    public void addToCurrentlyStreaming(String email, String content_id, String episode_id){
+        contentRepository.insertStream(email, content_id, episode_id);
     }
 
     @Transactional
@@ -243,8 +242,8 @@ public class ContentService {
     }
 
     @Transactional
-    public void deleteFromCurrentlyStreaming(String stream_id, String email, String content_id){
-        contentRepository.deleteHas(stream_id, email, content_id);
+    public void deleteFromCurrentlyStreaming(String email, String content_id){
+        contentRepository.deleteStream(email, content_id);
     }
 
     @Transactional
