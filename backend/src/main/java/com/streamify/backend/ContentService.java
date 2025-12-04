@@ -22,7 +22,15 @@ public class ContentService {
     }
 
     public Map<String, Object> getMemberByEmail(String email) {
-        return contentRepository.getMemberByEmail(email);
+        Map<String, Object> memberDetails = contentRepository.getMemberByEmail(email);
+        if (memberDetails != null && memberDetails.containsKey("isAdmin")) {
+            Object isAdminValue = memberDetails.get("isAdmin");
+            if (isAdminValue instanceof Number) {
+                boolean isAdmin = ((Number) isAdminValue).intValue() == 1;
+                memberDetails.put("isAdmin", isAdmin);
+            }
+        }
+        return memberDetails;
     }
 
     public List<Map<String, Object>> browseMovies(String genre, String actor, String director, String keyword, Boolean awardWinning) {
