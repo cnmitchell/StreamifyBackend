@@ -7,3 +7,4 @@ BEGIN
     INSERT INTO streamingHistory (email, content_id, episode_id, timestamp)
     VALUES(OLD.email, OLD.content_id, OLD.episode_id, NOW());
 END;
+-- drop/create must happen now
