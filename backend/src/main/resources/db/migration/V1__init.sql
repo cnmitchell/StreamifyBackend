@@ -1,18 +1,4 @@
-DROP USER IF EXISTS 'streamify_user'@'%';
-DROP USER IF EXISTS 'streamify_user'@'localhost';
-DROP USER IF EXISTS 'streamify_user'@'127.0.0.1';
-
 CREATE DATABASE IF NOT EXISTS streamify_db;
-
-CREATE USER 'streamify_user'@'%' IDENTIFIED WITH mysql_native_password BY 'streamify_pass';
-CREATE USER 'streamify_user'@'localhost' IDENTIFIED WITH mysql_native_password BY 'streamify_pass';
-CREATE USER 'streamify_user'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY 'streamify_pass';
-
-GRANT ALL PRIVILEGES ON streamify_db.* TO 'streamify_user'@'%';
-GRANT ALL PRIVILEGES ON streamify_db.* TO 'streamify_user'@'localhost';
-GRANT ALL PRIVILEGES ON streamify_db.* TO 'streamify_user'@'127.0.0.1';
-
-FLUSH PRIVILEGES;
 
 USE streamify_db;
 
