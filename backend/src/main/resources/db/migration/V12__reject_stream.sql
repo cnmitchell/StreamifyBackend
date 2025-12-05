@@ -4,13 +4,13 @@ CREATE TRIGGER reject_str
 BEFORE INSERT ON stream
 FOR EACH ROW
 BEGIN
-    DECLARE limit INT;
+    DECLARE lim INT;
     DECLARE curr INT;
 
     SELECT
         sp.active_streams
     INTO
-        limit
+        lim
     FROM
         member m
     JOIN
@@ -18,7 +18,7 @@ BEGIN
     WHERE
         m.email = NEW.email;
 
-    IF limit IS NULL THEN
+    IF lim IS NULL THEN
         SIGNAL SQLSTATE '45000'
             SET MESSAGE_TEXT = 'Subscription Error: User must have an active membership to stream.';
     END IF;
@@ -32,7 +32,7 @@ BEGIN
     WHERE
         s.email = NEW.email;
 
-    IF curr >= limit THEN
+    IF curr >= lim THEN
         SIGNAL SQLSTATE '45000'
             SET MESSAGE_TEXT = 'Stream limit exceeded: Cannot start a new stream under the current subscription plan.';
     END IF;
