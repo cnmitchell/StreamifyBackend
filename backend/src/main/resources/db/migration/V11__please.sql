@@ -13,7 +13,3 @@ ALTER TABLE directedBy ADD CONSTRAINT fk_directedBy_person_cascade
 ALTER TABLE awardedTo DROP FOREIGN KEY awardedTo_ibfk_1;
 ALTER TABLE awardedTo ADD CONSTRAINT fk_awardedTo_award_cascade
     FOREIGN KEY (award_name) REFERENCES award(award_name) ON DELETE CASCADE;
-
-ALTER TABLE has DROP FOREIGN KEY has_ibfk_3;
-ALTER TABLE has ADD CONSTRAINT fk_has_history_cascade
-    FOREIGN KEY (stream_id) REFERENCES streamingHistory(stream_id) ON DELETE CASCADE;
