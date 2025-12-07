@@ -5,9 +5,7 @@ public class AddStreamingRequest {
     private String content_id;
     private String episode_id;
 
-    public AddStreamingRequest() {
-
-    }
+    public AddStreamingRequest() {}
 
     public AddStreamingRequest(String email, String content_id) {
         this.email = email;

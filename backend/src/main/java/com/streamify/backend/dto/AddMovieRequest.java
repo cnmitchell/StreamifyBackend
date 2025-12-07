@@ -9,9 +9,7 @@ public class AddMovieRequest
     private String poster_url;
     private String sequel_to;
 
-    public AddMovieRequest(){
-
-    }
+    public AddMovieRequest(){}
 
     public AddMovieRequest(String content_name, String release_date,
                     String IMDB_link, String genre, String poster_url, String sequel_to) {

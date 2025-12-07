@@ -4,9 +4,7 @@ public class DeleteStreamingRequest {
     private String email;
     private String content_id;
 
-    public DeleteStreamingRequest() {
-
-    }
+    public DeleteStreamingRequest() {}
 
     public DeleteStreamingRequest(String stream_id, String email, String content_id) {
         this.email = email;

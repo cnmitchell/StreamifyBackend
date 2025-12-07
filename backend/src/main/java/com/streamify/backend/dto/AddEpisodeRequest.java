@@ -6,9 +6,7 @@ public class AddEpisodeRequest {
     private int episode_number;
     private String title;
 
-    public AddEpisodeRequest() {
-
-    }
+    public AddEpisodeRequest() {}
 
     public AddEpisodeRequest(String content_id, int season_number, int episode_number, String title, String release_date) {
         this.content_id = content_id;

@@ -9,9 +9,7 @@ public class AddSeriesRequest {
     private String total_episodes;
     private String total_seasons;
 
-    AddSeriesRequest() {
-
-    }
+    AddSeriesRequest() {}
 
     public AddSeriesRequest(String content_name, String release_date,
                            String IMDB_link, String genre, String poster_url,

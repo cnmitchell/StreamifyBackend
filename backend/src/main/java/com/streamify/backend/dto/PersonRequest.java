@@ -1,4 +1,3 @@
-
 package com.streamify.backend.dto;
 
 public class PersonRequest {

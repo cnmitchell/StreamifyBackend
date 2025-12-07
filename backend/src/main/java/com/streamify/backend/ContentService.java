@@ -157,16 +157,6 @@ public class ContentService {
 
     @Transactional
     public void addFullContent(AddFullContentRequest request) {
-        System.out.println("DEBUG: Entering addFullContent method.");
-        System.out.println("DEBUG: Content Name: " + request.getContent_name());
-        System.out.println("DEBUG: Release Date: " + request.getRelease_date());
-        System.out.println("DEBUG: IMDB Link: " + request.getIMDB_link());
-        System.out.println("DEBUG: Genre: " + request.getGenre());
-        System.out.println("DEBUG: Poster URL: " + request.getPoster_url());
-        System.out.println("DEBUG: Sequel To: " + request.getSequel_to());
-        System.out.println("DEBUG: Total Episodes: " + request.getTotal_episodes());
-        System.out.println("DEBUG: Total Seasons: " + request.getTotal_seasons());
-
         String contentId = nextId("content_id", "content", "C");
         contentRepository.insertContent(contentId, request.getContent_name(), request.getRelease_date(),
                 request.getIMDB_link(), request.getGenre(), request.getPoster_url());

@@ -69,7 +69,7 @@ public class ContentController {
         return contentService.getSeriesDetails(content_id);
     }
 
-    @GetMapping("/members-who-streamed") //getting empty array back??
+    @GetMapping("/members-who-streamed")
     public List<Map<String, Object>> membersWhoStreamed(@RequestParam String content_id) {
         return contentService.membersWhoStreamed(content_id);
     }
@@ -79,7 +79,7 @@ public class ContentController {
         return contentService.allContent();
     }
 
-    @GetMapping("/last-24h-trends") //need to test again
+    @GetMapping("/last-24h-trends")
     public List<Map<String, Object>> last24hTrends() {
         return contentService.last24hTrends();
     }
@@ -96,17 +96,11 @@ public class ContentController {
 
     @GetMapping("/person/search")
     public ResponseEntity<List<PersonRequest>> searchPeople(@RequestParam String name) {
-        System.out.println("DEBUG: Received request to search people with name: " + name); // System.out.println for debugging
-        logger.debug("Received request to search people with name: {}", name);
         try {
             List<PersonRequest> people = contentService.searchPeople(name);
-            System.out.println("DEBUG: Successfully searched people. Found " + people.size() + " results."); // System.out.println
             return ResponseEntity.ok(people);
         } catch (Exception e) {
-            System.err.println("ERROR: Error searching people with name: " + name + " - " + e.getMessage()); // System.err.println
-            e.printStackTrace(); // Print stack trace to System.err
-            logger.error("Error searching people with name: {}", name, e); // Log the full exception
-            return ResponseEntity.status(500).body(null); // Or a more specific error handling
+            return ResponseEntity.status(500).body(null);
         }
     }
 
@@ -200,10 +194,10 @@ public class ContentController {
     public ResponseEntity<Void> addFullContent(@RequestBody AddFullContentRequest request) {
         try {
             contentService.addFullContent(request);
-            return ResponseEntity.status(201).build(); // Return 201 with empty body
+            return ResponseEntity.status(201).build();
         } catch (Exception e) {
             logger.error("Error adding full content: {}", e.getMessage(), e);
-            return ResponseEntity.status(400).build(); // Return 400 for client-side errors
+            return ResponseEntity.status(400).build();
         }
     }
 

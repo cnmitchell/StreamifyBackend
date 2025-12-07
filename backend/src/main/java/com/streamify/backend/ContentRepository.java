@@ -16,7 +16,8 @@ public class ContentRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    // ---------------USER QUERIES---------------
+    //USER QUERIES
+
     public boolean login(String email, String password) {
         String sql = "SELECT COUNT(*) FROM users WHERE email = ? AND password = ?";
         Integer count = jdbcTemplate.queryForObject(sql, new Object[]{email, password}, Integer.class);
@@ -152,7 +153,8 @@ public class ContentRepository {
         return jdbcTemplate.queryForList(sql, content_id);
     }
 
-    //--------------ADMIN QUERIES------------------
+    //ADMIN QUERIES
+
     //get members who streamed a specific type of content
     public List<Map<String, Object>> membersWhoStreamed(String content_id) {
         String sql = "SELECT m.member_id, u.name, m.email, sh.timestamp " +
@@ -206,7 +208,8 @@ public class ContentRepository {
         return jdbcTemplate.queryForList(sql);
     }
 
-    // Transactions
+    //TRANSACTIONS
+
     public void insertUser(String email, String password, String name, String street,
                           String city, String state, String country, String phone) {
         String sql = "INSERT INTO users (email, password, name, street, city, state, country, phone) " +

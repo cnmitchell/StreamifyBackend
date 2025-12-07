@@ -4,9 +4,7 @@ public class DeleteMemberRequest {
     private String email;
     private String member_id;
 
-    public DeleteMemberRequest() {
-
-    }
+    public DeleteMemberRequest() {}
 
     public DeleteMemberRequest(String email, String member_id) {
         this.email = email;

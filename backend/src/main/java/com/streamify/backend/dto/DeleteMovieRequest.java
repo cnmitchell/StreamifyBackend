@@ -3,9 +3,7 @@ package com.streamify.backend.dto;
 public class DeleteMovieRequest {
     private String content_id;
 
-    public DeleteMovieRequest() {
-
-    }
+    public DeleteMovieRequest() {}
 
     public DeleteMovieRequest(String content_id) {
         this.content_id = content_id;
@@ -13,5 +11,4 @@ public class DeleteMovieRequest {
 
     public String getContent_id() {return this.content_id;}
     public void setContent_id(String content_id) {this.content_id = content_id;}
-
 }

@@ -12,8 +12,7 @@ public class UpdateUserRequest {
     private String phone;
     private String subscriptionId;
 
-    public UpdateUserRequest() {
-    }
+    public UpdateUserRequest() {}
 
     public String getEmail() {
         return email;

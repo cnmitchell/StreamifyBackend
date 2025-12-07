@@ -4,9 +4,7 @@ public class DeleteEpisodeRequest {
     private String content_id;
     private String episode_id;
 
-    public DeleteEpisodeRequest() {
-
-    }
+    public DeleteEpisodeRequest() {}
 
     public DeleteEpisodeRequest(String content_id, String episode_id) {
         this.content_id = content_id;

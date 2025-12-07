@@ -1,1 +1,0 @@
-ALTER TABLE has DROP FOREIGN KEY  has_ibfk_3;
